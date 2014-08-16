@@ -122,8 +122,6 @@ class Publish(object):
 
         return response
 
-    def _add_image_to_content(self, image_link, content):
-        pass
 
     def _content_extract(self, p_content):
         """
