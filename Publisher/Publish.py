@@ -30,9 +30,10 @@ class Publish(object):
         
         out : string with success or error with information 
         '''
+        from unidecode import unidecode
         try :
             for f in files_path :
-                self._file_updater(str(f))
+                self._file_updater(f)
         except Exception as e :
             return 'Error while uploading images : ' + str(e)
 

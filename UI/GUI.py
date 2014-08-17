@@ -6,15 +6,13 @@ Created on 30 juil. 2014
 import wx._core
 import wx.html
 import sys
-import plistlib
 from Publisher import Publish
 import threading
 import os
 import imp
 import mimetypes
 from DataStore.PrefStore import PrefStore
-
-
+from unidecode import unidecode
 
 def main_is_frozen() :
     return (hasattr(sys, "frozen") or  # new py2exe
@@ -78,31 +76,36 @@ class DropFile(wx._core.Frame) :
         self.files_to_upload = []
         self.content_to_upload = []
 
-        wx._core.Frame.__init__(self, parent, id, title, style=wx._core.SYSTEM_MENU | wx._core.CAPTION | wx._core.CLOSE_BOX, size=(450, 400))
+        if sys.platform == 'darwin':
+            wx._core.Frame.__init__(self, parent, id, title, style=wx._core.SYSTEM_MENU | wx._core.CAPTION | wx._core.CLOSE_BOX, size=(450, 400))
+        else :
+            wx._core.Frame.__init__(self, parent, id, title, style=wx._core.SYSTEM_MENU | wx._core.CAPTION | wx._core.CLOSE_BOX, size=(450, 420))
 
         ####Menu bar######
         menu_bar = wx._core.MenuBar()
-        help_menu = wx._core.Menu()
+        info_menu = wx._core.Menu()
 
-        pref = help_menu.Append(wx._core.ID_PREFERENCES, "&Preferences")
-        abt = help_menu.Append(wx._core.ID_ABOUT, "&About")
+        menu_bar.Append(info_menu, '&Information')
+
+        pref = info_menu.Append(wx._core.ID_PREFERENCES, "&Preferences")
+        abt = info_menu.Append(wx._core.ID_ABOUT, "&About")
+
 
         self.Bind(wx._core.EVT_MENU, self.OnAbout, abt)
         self.Bind(wx._core.EVT_MENU, self.OnPrefs, pref)
 
-        menu_bar.Append(help_menu, '&Help')
         self.SetMenuBar(menu_bar)
         ###################
 
         self.panel = wx._core.Panel(self)
-        self.list = wx._core.ListCtrl(self.panel, size=(450, 330), style=wx._core.LC_REPORT | wx._core.LC_NO_HEADER)
+        self.list = wx._core.ListCtrl(self.panel, size=(460, 330), style=wx._core.LC_REPORT | wx._core.LC_NO_HEADER)
 
         self.btn_publish = wx._core.Button(self.panel, 1, "Publish", pos=(350, 337))
         self.btn_publish.Bind(wx._core.EVT_BUTTON, self.OnButtonPublish)
 
         print get_main_dir()
-        img = wx._core.Image(get_main_dir() + "/DragHere.png", wx._core.BITMAP_TYPE_PNG)
-        wx._core.StaticBitmap(self.panel, -1, wx._core.BitmapFromImage(img), pos=(200, 333))
+        self.drag_here_img = wx._core.Image(get_main_dir() + "/DragHere.png", wx._core.BITMAP_TYPE_PNG)
+        wx._core.StaticBitmap(self.panel, -1, wx._core.BitmapFromImage(self.drag_here_img), pos=(200, 333))
 
         self.btn_delete = wx._core.Button(self.panel, wx._core.ID_DELETE, pos=(2, 337))
         self.btn_delete.Bind(wx._core.EVT_BUTTON, self.OnButtonDelete)
@@ -213,6 +216,7 @@ class DropFile(wx._core.Frame) :
         self.upld_prog_label.SetBackgroundColour((118, 238, 198))
         self.btn_publish.Show(False)
         self.btn_delete.Show(False)
+        self.drag_here_img.Show(False)
 
         thread_publi = threading.Thread(target=self.publish_post)
 
@@ -240,6 +244,7 @@ class DropFile(wx._core.Frame) :
         self.upld_prog_label.Hide()
         self.btn_publish.Show(True)
         self.btn_delete.Show(True)
+        self.drag_here_img.Show(True)
 
 
 class DragPressApp(wx._core.App) :
