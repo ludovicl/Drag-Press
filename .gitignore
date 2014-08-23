@@ -10,4 +10,4 @@
 .project
 .pydevproject
 *.prefs
-
+*.pyo

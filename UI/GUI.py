@@ -215,7 +215,6 @@ class DropFile(wx.Frame) :
         self.upld_prog_label.SetBackgroundColour((118, 238, 198))
         self.btn_publish.Show(False)
         self.btn_delete.Show(False)
-#         self.drag_here_img.(False)
 
         thread_publi = threading.Thread(target=self.publish_post)
 
@@ -243,8 +242,6 @@ class DropFile(wx.Frame) :
         self.upld_prog_label.Hide()
         self.btn_publish.Show(True)
         self.btn_delete.Show(True)
-#         self.drag_here_img.Show(True)
-
 
 class DragPressApp(wx.App) :
     def OnInit(self):

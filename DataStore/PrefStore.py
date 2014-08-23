@@ -7,7 +7,7 @@ Created on 14 août 2014
 import sys
 import plistlib
 import os
-from appdirs import *
+from appdirs import user_data_dir
 
 class PrefStore(object):
     '''
@@ -19,6 +19,7 @@ class PrefStore(object):
         '''
         Constructor
         '''
+
     @classmethod
     def set_data_to_stored(self, url, text, pwd):
 
@@ -31,6 +32,7 @@ class PrefStore(object):
         elif sys.platform == 'win32':
             if not os.path.exists(user_data_dir("Drag&Press")):
                 os.makedirs(user_data_dir("Drag&Press"))
+
     @classmethod
     def get_data_stored(self):
         if sys.platform == 'darwin' :
