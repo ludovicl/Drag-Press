@@ -22,7 +22,7 @@ def main_is_frozen() :
 def get_main_dir() :
     if main_is_frozen() :
         return os.path.dirname("../Resources/images/")
-    return "Resources/images/"  # os.path.dirname(sys.argv[0] + "/../Resources/images/")
+    return os.path.dirname(__file__)+"/../Resources/images/"
 
 
 class FileDrop(wx.FileDropTarget) :
@@ -103,7 +103,7 @@ class DropFile(wx.Frame) :
         self.btn_publish.Bind(wx.EVT_BUTTON, self.OnButtonPublish)
 
         print get_main_dir()
-        self.drag_here_img = wx.Image(get_main_dir() + "/DragHere.png", wx.BITMAP_TYPE_PNG)
+        self.drag_here_img = wx.Image(get_main_dir() + "DragHere.png", wx.BITMAP_TYPE_PNG)
         wx.StaticBitmap(self.panel, -1, wx.BitmapFromImage(self.drag_here_img), pos=(200, 333))
 
         self.btn_delete = wx.Button(self.panel, wx.ID_DELETE, pos=(2, 337))
