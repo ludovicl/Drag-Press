@@ -11,3 +11,5 @@
 .pydevproject
 *.prefs
 *.pyo
+.*
+!/.gitignore
