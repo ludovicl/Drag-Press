@@ -20,7 +20,7 @@ class Publish(object):
     def __init__(self, website, user, password):
         self.wp = Client(website + "/xmlrpc.php", user, password)
         self.images_link = []
-
+        self.all_upd_response=[]
 
     def post_article(self, content_path, files_path):
         '''
@@ -39,7 +39,7 @@ class Publish(object):
 
         try :
             if len(content_path) == 1 :
-                title, categories, tags, content, = self._content_extract(content_path[0])
+                title, categories, tags,thumbnail, content, = self._content_extract(content_path[0])
             else :
                 return 'Error with the content : upload one text file'
         except Exception as e :
@@ -48,9 +48,14 @@ class Publish(object):
         try :
             html_content = markdown2.markdown(content)
             post = WordPressPost()
-            post.title = ' '.join(title)
+            post.title = title
+            
+            for upd in self.all_upd_response : 
+                if upd['file'] == thumbnail :
+                    post.thumbnail = upd['id']
+        
         except Exception as e :
-            return 'Erro while converting in markdown : ' + str(e)
+            return 'Error while converting in markdown : ' + str(e)
 
         try :
             # convert unicode in string
@@ -73,8 +78,9 @@ class Publish(object):
 
             post.terms_names = {
                 'post_tag': tags,
-                'category': categories
+                'category': categories,
                 }
+            
         except Exception as e :
             return 'Erro while normalizing html : ' + str(e)
 
@@ -121,7 +127,7 @@ class Publish(object):
 
         self.images_link.append(img)
 
-        return response
+        self.all_upd_response.append(response)
 
 
     def _content_extract(self, p_content):
@@ -130,27 +136,28 @@ class Publish(object):
             -Title
             -Category
             -KeyWords
+            -Thumbnail
             -Contents
-        out : Title in a list, category in a list, KeyWord in a list, content in a string
+        out : Title in a string, Category in a list, KeyWord in a list, Thumbnail in a string, content in a string
         """
         text_content = ''
 
         with io.open(p_content, 'r', encoding='utf8') as f:
 
-            # Pop call remove "Title :", "Categories :", and "Keywords :"
+            # Pop call remove "Title :", "Categories :", and "Keywords : and Thumbnail :"
 
-            title = f.readline().split()
-            title.pop(0)
-            title.pop(0)
+            title = f.readline().split()[2:]
+            title = ' '.join(title).split(' ')
 
-            cat = f.readline().split()
-            cat.pop(0)
-            cat.pop(0)
-
-            keywords = f.readline().split()
-            keywords.pop(0)
-            keywords.pop(0)
-
+            cat = f.readline().split()[2:]
+            cat = ' '.join(cat).split(', ')
+            
+            keywords = f.readline().split()[2:]
+            keywords = ' '.join(keywords).split(', ')
+    
+            thumbnail = f.readline().split()[2:]
+            thumbnail_str = ' '.join(thumbnail) 
+            
             for line in f:
                 text_content += line
 
@@ -160,7 +167,9 @@ class Publish(object):
 
                 if text_content.find('(' + file + ')') :
                     text_content = text_content.replace(file, url)
+                if thumbnail_str.find('(' + file + ')') :
+                    thumbnail_str = thumbnail_str.replace(file, url) 
 
-        return title, cat, keywords, text_content
+        return ' '.join(title), cat, keywords,thumbnail_str , text_content
 
 
