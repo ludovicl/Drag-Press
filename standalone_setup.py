@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 '''
-Created on 9 août 2014
+Created on 9 aout 2014
 
 @author: ludovicl
 '''
@@ -58,6 +58,7 @@ if sys.argv[1] == 'py2app' :
 # cx_freeze setup (GNU/Linux)
 if sys.argv[1] == "install" :
 
+    print "Before install"
     # Module : cx_freeze
     # usage : python standalone_setup.py install
 
